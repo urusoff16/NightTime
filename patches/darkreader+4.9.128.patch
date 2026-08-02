@@ -1,0 +1,26 @@
+diff --git a/node_modules/darkreader/darkreader.js b/node_modules/darkreader/darkreader.js
+index 0e75c68..39f7859 100644
+--- a/node_modules/darkreader/darkreader.js
++++ b/node_modules/darkreader/darkreader.js
+@@ -8120,7 +8120,7 @@
+             fixes && fixes.disableCustomElementRegistryProxy
+         );
+         document.dispatchEvent(new CustomEvent("__darkreader__cleanUp"));
+-        {
++        if (enableStyleSheetsProxy || enableCustomElementRegistryProxy) {
+             const proxyScript = createOrUpdateScript("darkreader--proxy");
+             proxyScript.append(
+                 `(${injectProxy})(${enableStyleSheetsProxy}, ${enableCustomElementRegistryProxy})`
+diff --git a/node_modules/darkreader/darkreader.mjs b/node_modules/darkreader/darkreader.mjs
+index fa40d82..cbc7600 100644
+--- a/node_modules/darkreader/darkreader.mjs
++++ b/node_modules/darkreader/darkreader.mjs
+@@ -7860,7 +7860,7 @@ function createStaticStyleOverrides() {
+         fixes && fixes.disableCustomElementRegistryProxy
+     );
+     document.dispatchEvent(new CustomEvent("__darkreader__cleanUp"));
+-    {
++    if (enableStyleSheetsProxy || enableCustomElementRegistryProxy) {
+         const proxyScript = createOrUpdateScript("darkreader--proxy");
+         proxyScript.append(
+             `(${injectProxy})(${enableStyleSheetsProxy}, ${enableCustomElementRegistryProxy})`
