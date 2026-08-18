@@ -17,7 +17,7 @@ export class EngineManager {
   apply(_requestedEngine: EngineMode, settings: ThemeSettings): EngineApplyResult {
     try {
       this.smartEngine.apply(settings);
-      this.readabilityLayer.apply();
+      this.readabilityLayer.apply(settings);
       this.dimmingOverlay.apply(settings.dimming);
       this.activeEngine = 'smart';
       return { engine: 'smart', fallbackUsed: false };

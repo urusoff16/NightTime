@@ -34,6 +34,10 @@ export function App() {
   const nightShiftTimerRef = useRef<number | null>(null);
   const language = resolveUiLanguage(settings.language);
 
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   function showSettings(next: ExtensionSettings): void {
     settingsRef.current = next;
     setSettings(next);

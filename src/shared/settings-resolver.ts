@@ -33,6 +33,15 @@ export function matchesDomain(hostname: string, rule: string): boolean {
   return host === normalizedRule || host.endsWith(`.${normalizedRule}`);
 }
 
+export function findMostSpecificSiteOverride(
+  hostname: string,
+  overrides: ExtensionSettings['siteOverrides'],
+): ExtensionSettings['siteOverrides'][string] | undefined {
+  return Object.entries(overrides)
+    .filter(([rule]) => matchesDomain(hostname, rule))
+    .sort(([first], [second]) => second.length - first.length)[0]?.[1];
+}
+
 function isScheduleActive(context: ResolveContext): boolean {
   const { schedule } = context.settings;
   if (schedule.mode === 'off') return true;
@@ -61,22 +70,23 @@ export function resolveEffectiveSettings(context: ResolveContext): EffectiveSett
     reason,
   });
   if (!context.pageAvailable) return fallback('page-unavailable');
+  const override = findMostSpecificSiteOverride(hostname, settings.siteOverrides);
+  if (override?.enabled === false) return fallback('site-disabled');
+
+  const forceEnabled = override?.enabled === true;
   const listed = settings.siteList.some((rule) => matchesDomain(hostname, rule));
   if (
-    (settings.siteListMode === 'blacklist' && listed) ||
-    (settings.siteListMode === 'whitelist' && !listed)
+    !forceEnabled &&
+    ((settings.siteListMode === 'blacklist' && listed) ||
+      (settings.siteListMode === 'whitelist' && !listed))
   ) {
     return fallback('site-list');
   }
-
-  const override = Object.entries(settings.siteOverrides).find(([rule]) =>
-    matchesDomain(hostname, rule),
-  )?.[1];
-  if (override?.enabled === false) return fallback('site-disabled');
-  if (!isScheduleActive(context)) return fallback('schedule');
+  if (!forceEnabled && !isScheduleActive(context)) return fallback('schedule');
 
   const respectNativeDark = override?.respectNativeDark ?? settings.respectNativeDark;
-  const themeEnabled = settings.enabled && !(context.nativeDark && respectNativeDark);
+  const themeEnabled =
+    settings.enabled && (forceEnabled || !(context.nativeDark && respectNativeDark));
   const nightShiftEnabled = settings.nightShift.enabled;
 
   return {

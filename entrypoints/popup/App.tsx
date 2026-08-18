@@ -38,7 +38,6 @@ function emptyOverride(): SiteOverride {
     enabled: null,
     engine: null,
     respectNativeDark: null,
-    invertImages: null,
     theme: {},
     updatedAt: 0,
   };
@@ -60,6 +59,10 @@ export function App() {
   }
 
   const language = resolveUiLanguage(settings.language);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   useEffect(() => {
     void Promise.all([readExtensionSettings(), getActiveHostname()])
@@ -153,7 +156,8 @@ export function App() {
   const override = hostname
     ? (settings.siteOverrides[hostname] ?? emptyOverride())
     : emptyOverride();
-  const siteEnabled = override.enabled !== false;
+  const siteMode =
+    override.enabled === true ? 'on' : override.enabled === false ? 'off' : 'inherit';
   const hasSiteOverride = hostname ? settings.siteOverrides[hostname] !== undefined : false;
 
   return (
@@ -240,30 +244,37 @@ export function App() {
           <span className="site-card__label">{t('site', language)}</span>
           <strong>{hostname ?? t('unavailable', language)}</strong>
         </div>
-        <label className="site-switch">
-          <input
-            type="checkbox"
-            checked={siteEnabled}
+        <label className="site-mode">
+          <span>{t('enableOnSite', language)}</span>
+          <select
+            value={siteMode}
             disabled={!hostname || status === 'working'}
-            onChange={(event) =>
-              hostname &&
+            onChange={(event) => {
+              if (!hostname) return;
+              const mode = event.target.value as 'inherit' | 'on' | 'off';
+              const enabled = mode === 'inherit' ? null : mode === 'on';
+              const messageKey =
+                mode === 'inherit'
+                  ? 'siteFollowRules'
+                  : mode === 'on'
+                    ? 'siteEnabled'
+                    : 'siteDisabled';
               void apply(
                 {
                   ...settingsRef.current,
                   siteOverrides: {
                     ...settingsRef.current.siteOverrides,
-                    [hostname]: {
-                      ...override,
-                      enabled: event.target.checked ? null : false,
-                      updatedAt: Date.now(),
-                    },
+                    [hostname]: { ...override, enabled, updatedAt: Date.now() },
                   },
                 },
-                t(event.target.checked ? 'siteEnabled' : 'siteDisabled', language),
-              )
-            }
-          />
-          <span>{t('enableOnSite', language)}</span>
+                t(messageKey, language),
+              );
+            }}
+          >
+            <option value="inherit">{t('siteFollowRules', language)}</option>
+            <option value="on">{t('siteForceOn', language)}</option>
+            <option value="off">{t('siteForceOff', language)}</option>
+          </select>
         </label>
         {hasSiteOverride && (
           <button

@@ -79,9 +79,11 @@ test.describe('Dark Reader engine spike', () => {
       expect(await fixtureEditor.count()).toBe(1);
       await fixtureEditor.click();
       await page.screenshot({ path: 'test-results/engine-spike-focus.png' });
-      expect(
-        await fixtureEditor.evaluate((element) => getComputedStyle(element).outlineStyle),
-      ).toBe('none');
+      const focusedShadow = await fixtureEditor.evaluate(
+        (element) => getComputedStyle(element).boxShadow,
+      );
+      expect(focusedShadow).toContain('rgb(0, 0, 0)');
+      expect(focusedShadow).not.toContain('rgb(26, 115, 232)');
       const frame = page.frames().find((candidate) => candidate.url().endsWith('/frame'));
       expect(frame).toBeDefined();
       await expect(frame!.locator('style.darkreader').first()).toBeAttached();
@@ -120,9 +122,9 @@ test.describe('Dark Reader engine spike', () => {
               ...current.theme,
               brightness: 88,
               contrast: 108,
-              saturation: 82,
               dimming: 14,
             },
+            nightShift: { enabled: true, intensity: 30 },
           },
         });
       });
@@ -137,6 +139,9 @@ test.describe('Dark Reader engine spike', () => {
           data: { enabled: true, engine: 'smart', brightness: 88, contrast: 108 },
         });
       await expect(page.locator('#night-mode-dimming-overlay')).toHaveCount(1);
+      await expect(page.locator('#night-mode-night-shift-overlay')).toHaveCount(1);
+      await expect(frame!.locator('#night-mode-dimming-overlay')).toHaveCount(0);
+      await expect(frame!.locator('#night-mode-night-shift-overlay')).toHaveCount(0);
 
       await serviceWorker.evaluate(async () => {
         const stored = await chrome.storage.local.get('extensionSettings');
@@ -151,9 +156,9 @@ test.describe('Dark Reader engine spike', () => {
               ...current.theme,
               brightness: 96,
               contrast: 100,
-              saturation: 90,
               dimming: 0,
             },
+            nightShift: { enabled: false, intensity: 30 },
           },
         });
       });
@@ -201,6 +206,8 @@ test.describe('Dark Reader engine spike', () => {
       await expect(popup.getByRole('button', { name: 'Disable night mode' })).toBeVisible();
       await expect(popup.getByLabel('Settings')).toBeVisible();
       await expect(popup.getByLabel('Language')).toHaveValue('en');
+      await expect(popup.getByLabel('Site mode')).toHaveValue('inherit');
+      await expect(popup.locator('#preset option')).toHaveCount(8);
       await page.bringToFront();
       const brightness = popup.locator('#brightness');
       for (const value of ['92', '86', '79', '73']) await brightness.fill(value);

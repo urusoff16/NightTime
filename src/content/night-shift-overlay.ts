@@ -3,6 +3,10 @@ const OVERLAY_ID = 'night-mode-night-shift-overlay';
 export class NightShiftOverlay {
   apply(enabled: boolean, intensity: number): void {
     let overlay = document.getElementById(OVERLAY_ID) as HTMLDivElement | null;
+    if (typeof window !== 'undefined' && window.self !== window.top) {
+      overlay?.remove();
+      return;
+    }
     if (!enabled || intensity <= 0) {
       overlay?.remove();
       return;

@@ -25,4 +25,15 @@ describe('normalizeSpikeSettings', () => {
 
     expect(settings.engine).toBe('smart');
   });
+
+  it('disables unreliable native-theme detection while migrating schema 1', () => {
+    const settings = normalizeExtensionSettings({
+      ...DEFAULT_EXTENSION_SETTINGS,
+      schemaVersion: 1,
+      respectNativeDark: true,
+    });
+
+    expect(settings.schemaVersion).toBe(2);
+    expect(settings.respectNativeDark).toBe(false);
+  });
 });

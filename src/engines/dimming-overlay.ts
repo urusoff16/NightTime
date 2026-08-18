@@ -8,6 +8,10 @@ export class DimmingOverlay {
   apply(dimming: number): void {
     if (typeof document === 'undefined') return;
     let overlay = document.getElementById(OVERLAY_ID) as HTMLDivElement | null;
+    if (typeof window !== 'undefined' && window.self !== window.top) {
+      overlay?.remove();
+      return;
+    }
     if (dimming <= 0) {
       overlay?.remove();
       return;

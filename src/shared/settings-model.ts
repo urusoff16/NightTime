@@ -5,7 +5,6 @@ export type ScheduleMode = 'off' | 'custom-time' | 'system-theme';
 export interface ThemeSettings {
   brightness: number;
   contrast: number;
-  saturation: number;
   warmth: number;
   grayscale: number;
   dimming: number;
@@ -13,7 +12,6 @@ export interface ThemeSettings {
   surfaceColor: string;
   textColor: string;
   mutedTextColor: string;
-  linkColor: string;
   borderColor: string;
 }
 
@@ -34,13 +32,12 @@ export interface SiteOverride {
   enabled: boolean | null;
   engine: EngineMode | null;
   respectNativeDark: boolean | null;
-  invertImages: boolean | null;
   theme: Partial<ThemeSettings>;
   updatedAt: number;
 }
 
 export interface ExtensionSettings {
-  schemaVersion: 1;
+  schemaVersion: 2;
   enabled: boolean;
   engine: EngineMode;
   respectNativeDark: boolean;
@@ -54,12 +51,11 @@ export interface ExtensionSettings {
   language: 'auto' | 'ru' | 'en';
 }
 
-export const SETTINGS_SCHEMA_VERSION = 1 as const;
+export const SETTINGS_SCHEMA_VERSION = 2 as const;
 
 export const DEFAULT_THEME_SETTINGS: Readonly<ThemeSettings> = {
   brightness: 100,
   contrast: 100,
-  saturation: 100,
   warmth: 0,
   grayscale: 0,
   dimming: 0,
@@ -67,7 +63,6 @@ export const DEFAULT_THEME_SETTINGS: Readonly<ThemeSettings> = {
   surfaceColor: '#1e2230',
   textColor: '#e8edf5',
   mutedTextColor: '#aeb8c8',
-  linkColor: '#9eb2ff',
   borderColor: '#414b60',
 };
 
@@ -75,7 +70,7 @@ export const DEFAULT_EXTENSION_SETTINGS: Readonly<ExtensionSettings> = {
   schemaVersion: SETTINGS_SCHEMA_VERSION,
   enabled: false,
   engine: 'smart',
-  respectNativeDark: true,
+  respectNativeDark: false,
   siteListMode: 'blacklist',
   siteList: [],
   theme: DEFAULT_THEME_SETTINGS,

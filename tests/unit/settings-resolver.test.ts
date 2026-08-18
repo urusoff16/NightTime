@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_EXTENSION_SETTINGS } from '../../src/shared/settings-model';
-import { matchesDomain, resolveEffectiveSettings } from '../../src/shared/settings-resolver';
+import {
+  findMostSpecificSiteOverride,
+  matchesDomain,
+  resolveEffectiveSettings,
+} from '../../src/shared/settings-resolver';
 
 const activeSettings = {
   ...DEFAULT_EXTENSION_SETTINGS,
@@ -24,7 +28,6 @@ describe('settings resolver', () => {
             enabled: false,
             engine: null,
             respectNativeDark: null,
-            invertImages: null,
             theme: {},
             updatedAt: 1,
           },
@@ -37,6 +40,50 @@ describe('settings resolver', () => {
       pageAvailable: true,
     });
     expect(result.reason).toBe('site-disabled');
+  });
+
+  it('lets an explicit site enable bypass blacklist and schedule rules', () => {
+    const result = resolveEffectiveSettings({
+      settings: {
+        ...activeSettings,
+        siteList: ['example.com'],
+        schedule: { ...activeSettings.schedule, mode: 'custom-time', enabled: false },
+        siteOverrides: {
+          'sub.example.com': {
+            enabled: true,
+            engine: null,
+            respectNativeDark: null,
+            theme: {},
+            updatedAt: 1,
+          },
+        },
+      },
+      hostname: 'sub.example.com',
+      now: new Date('2026-08-02T12:00:00'),
+      systemPrefersDark: false,
+      nativeDark: true,
+      pageAvailable: true,
+    });
+
+    expect(result).toMatchObject({ enabled: true, reason: 'enabled' });
+  });
+
+  it('chooses the most specific matching domain override', () => {
+    const general = {
+      enabled: false,
+      engine: null,
+      respectNativeDark: null,
+      theme: {},
+      updatedAt: 1,
+    } as const;
+    const specific = { ...general, enabled: true } as const;
+
+    expect(
+      findMostSpecificSiteOverride('docs.example.com', {
+        'example.com': general,
+        'docs.example.com': specific,
+      }),
+    ).toBe(specific);
   });
 
   it('supports schedules crossing midnight', () => {

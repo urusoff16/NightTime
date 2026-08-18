@@ -47,7 +47,6 @@ export function normalizeThemeSettings(value: unknown): ThemeSettings {
   return {
     brightness: number(source.brightness, DEFAULT_THEME_SETTINGS.brightness, 50, 120),
     contrast: number(source.contrast, DEFAULT_THEME_SETTINGS.contrast, 50, 150),
-    saturation: number(source.saturation, DEFAULT_THEME_SETTINGS.saturation, 0, 150),
     warmth: number(source.warmth, DEFAULT_THEME_SETTINGS.warmth, 0, 100),
     grayscale: number(source.grayscale, DEFAULT_THEME_SETTINGS.grayscale, 0, 100),
     dimming: number(source.dimming, DEFAULT_THEME_SETTINGS.dimming, 0, 80),
@@ -55,7 +54,6 @@ export function normalizeThemeSettings(value: unknown): ThemeSettings {
     surfaceColor: color(source.surfaceColor, DEFAULT_THEME_SETTINGS.surfaceColor),
     textColor: color(source.textColor, DEFAULT_THEME_SETTINGS.textColor),
     mutedTextColor: color(source.mutedTextColor, DEFAULT_THEME_SETTINGS.mutedTextColor),
-    linkColor: color(source.linkColor, DEFAULT_THEME_SETTINGS.linkColor),
     borderColor: color(source.borderColor, DEFAULT_THEME_SETTINGS.borderColor),
   };
 }
@@ -72,7 +70,6 @@ function normalizeOverride(value: unknown): SiteOverride {
       : null,
     respectNativeDark:
       typeof source.respectNativeDark === 'boolean' ? source.respectNativeDark : null,
-    invertImages: typeof source.invertImages === 'boolean' ? source.invertImages : null,
     theme: Object.fromEntries(themeKeys.map((key) => [key, theme[key]])) as Partial<ThemeSettings>,
     updatedAt: number(source.updatedAt, 0, 0, Number.MAX_SAFE_INTEGER),
   };
@@ -80,6 +77,7 @@ function normalizeOverride(value: unknown): SiteOverride {
 
 export function normalizeExtensionSettings(value: unknown): ExtensionSettings {
   const source = record(value);
+  const sourceSchemaVersion = typeof source.schemaVersion === 'number' ? source.schemaVersion : 0;
   const schedule = record(source.schedule);
   const overrides = record(source.siteOverrides);
   const normalizedOverrides = Object.fromEntries(
@@ -95,6 +93,7 @@ export function normalizeExtensionSettings(value: unknown): ExtensionSettings {
       ? (source.engine as EngineMode)
       : DEFAULT_EXTENSION_SETTINGS.engine,
     respectNativeDark:
+      sourceSchemaVersion >= SETTINGS_SCHEMA_VERSION &&
       typeof source.respectNativeDark === 'boolean'
         ? source.respectNativeDark
         : DEFAULT_EXTENSION_SETTINGS.respectNativeDark,
