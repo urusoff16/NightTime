@@ -1,6 +1,10 @@
 import { ThemeController } from '../src/content/theme-controller';
 import { NightShiftOverlay } from '../src/content/night-shift-overlay';
-import { detectNativeDarkTheme, isExtensionPageAvailable } from '../src/content/page-state';
+import {
+  detectNativeDarkTheme,
+  getPageHostname,
+  isExtensionPageAvailable,
+} from '../src/content/page-state';
 import { isContentCommand, type ContentState, type MessageResult } from '../src/shared/messages';
 import { EXTENSION_SETTINGS_KEY, readExtensionSettings } from '../src/shared/settings-storage';
 import { resolveEffectiveSettings } from '../src/shared/settings-resolver';
@@ -9,6 +13,8 @@ export default defineContentScript({
   matches: ['http://*/*', 'https://*/*'],
   runAt: 'document_start',
   allFrames: true,
+  matchAboutBlank: true,
+  matchOriginAsFallback: true,
   main() {
     const controller = new ThemeController();
     const nightShift = new NightShiftOverlay();
@@ -36,7 +42,7 @@ export default defineContentScript({
       const settings = await readExtensionSettings();
       const effective = resolveEffectiveSettings({
         settings,
-        hostname: location.hostname,
+        hostname: getPageHostname(),
         now: new Date(),
         systemPrefersDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
         nativeDark: settings.enabled ? await getOriginalNativeDark() : false,

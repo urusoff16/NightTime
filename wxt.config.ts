@@ -7,10 +7,22 @@ export default defineConfig({
     description: '__MSG_extensionDescription__',
     default_locale: 'en',
     short_name: '__MSG_extensionShortName__',
-    permissions: ['storage', 'activeTab', 'alarms'],
+    permissions: ['storage', 'alarms'],
     host_permissions: ['http://*/*', 'https://*/*'],
+    icons: {
+      16: 'icons/icon-16.png',
+      32: 'icons/icon-32.png',
+      48: 'icons/icon-48.png',
+      128: 'icons/icon-128.png',
+    },
     action: {
       default_title: '__MSG_extensionShortName__',
+      default_icon: {
+        16: 'icons/icon-16.png',
+        32: 'icons/icon-32.png',
+        48: 'icons/icon-48.png',
+        128: 'icons/icon-128.png',
+      },
     },
   },
 });
