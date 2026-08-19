@@ -9,7 +9,7 @@ export default defineContentScript({
   matches: ['http://*/*', 'https://*/*'],
   runAt: 'document_start',
   allFrames: true,
-  main(context) {
+  main() {
     const controller = new ThemeController();
     const nightShift = new NightShiftOverlay();
     let originalNativeDark: boolean | null = null;
@@ -94,6 +94,5 @@ export default defineContentScript({
     });
 
     applyStoredSettingsSafely();
-    context.setInterval(applyStoredSettingsSafely, 60_000);
   },
 });

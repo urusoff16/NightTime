@@ -7,13 +7,10 @@ export default defineConfig({
     description: '__MSG_extensionDescription__',
     default_locale: 'en',
     short_name: '__MSG_extensionShortName__',
-    permissions: ['storage', 'activeTab'],
+    permissions: ['storage', 'activeTab', 'alarms'],
+    host_permissions: ['http://*/*', 'https://*/*'],
     action: {
       default_title: '__MSG_extensionShortName__',
-    },
-    options_ui: {
-      page: 'options.html',
-      open_in_tab: true,
     },
   },
 });
