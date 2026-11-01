@@ -43,4 +43,4 @@ Before release, run `npm run test:all`, `npm run test:e2e`, and the manual check
 
 ## License
 
-Copyright (c) 2026 Abdurakhman Urusov. NightTime is licensed under the [PolyForm Strict License 1.0.0](LICENSE). It permits noncommercial use, including personal use, but does not grant permission to distribute or modify the software. See the license for its complete terms, including provisions for certain noncommercial organizations. Third-party components retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
+Copyright (c) 2026 ar.urusoff. NightTime is licensed under the [PolyForm Strict License 1.0.0](LICENSE). It permits noncommercial use, including personal use, but does not grant permission to distribute or modify the software. See the license for its complete terms, including provisions for certain noncommercial organizations. Third-party components retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
