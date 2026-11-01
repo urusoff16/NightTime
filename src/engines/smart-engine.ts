@@ -2,6 +2,7 @@ import { disable, enable, setFetchMethod } from 'darkreader';
 
 import type { ThemeSettings } from '../shared/settings-model';
 import { REMOTE_RESOURCE_REQUEST, type RemoteResourceResult } from '../shared/remote-resource';
+import { sendRuntimeMessage } from '../shared/runtime-messaging';
 import type { ThemeEngine } from './engine';
 
 function decodeBase64(value: string): ArrayBuffer {
@@ -15,10 +16,10 @@ function decodeBase64(value: string): ArrayBuffer {
 }
 
 async function fetchThroughExtension(url: string): Promise<Response> {
-  const result = (await chrome.runtime.sendMessage({
+  const result = await sendRuntimeMessage<RemoteResourceResult>({
     type: REMOTE_RESOURCE_REQUEST,
     url,
-  })) as RemoteResourceResult;
+  });
   if (!result.ok) throw new Error(result.error);
   return new Response(decodeBase64(result.data.bodyBase64), {
     status: result.data.status,
@@ -34,7 +35,7 @@ export class SmartEngine implements ThemeEngine {
     const cspSafeFixes = {
       invert: [],
       css: '',
-      ignoreInlineStyle: [],
+      ignoreInlineStyle: ['[data-nighttime-smart-dark-target]'],
       ignoreImageAnalysis: [],
       disableStyleSheetsProxy: true,
       disableCustomElementRegistryProxy: true,

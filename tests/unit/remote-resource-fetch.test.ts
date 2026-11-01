@@ -34,6 +34,25 @@ describe('remote resource fetch', () => {
     );
   });
 
+  it('serializes an allowed image response required by dynamic themes', async () => {
+    const image = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(image, {
+        headers: { 'content-type': 'image/png' },
+        status: 200,
+        statusText: 'OK',
+      }),
+    );
+
+    const result = await fetchRemoteResource('https://cdn.example.com/icon.png', fetchMock);
+    const decodedImage = Uint8Array.from(atob(result.bodyBase64), (character) =>
+      character.charCodeAt(0),
+    );
+
+    expect(result.status).toBe(200);
+    expect(Array.from(decodedImage)).toEqual(Array.from(image));
+  });
+
   it('rejects oversized and unsafe content', async () => {
     const oversized = new Uint8Array(MAX_REMOTE_RESOURCE_BYTES + 1);
     await expect(

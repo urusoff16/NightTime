@@ -8,7 +8,12 @@ import {
 } from '../../src/shared/settings-model';
 import { resolveUiLanguage, t } from '../../src/shared/i18n';
 import { readExtensionSettings, saveExtensionSettings } from '../../src/shared/settings-storage';
-import { findThemePreset, getPresetName, THEME_PRESETS } from '../../src/themes/presets';
+import {
+  findThemePreset,
+  getPresetName,
+  resolvePresetTheme,
+  THEME_PRESETS,
+} from '../../src/themes/presets';
 
 type PopupStatus = 'ready' | 'working' | 'error';
 
@@ -118,7 +123,7 @@ export function App() {
         ...settingsRef.current,
         activePresetId: preset.id,
         engine: preset.engine,
-        theme: { ...settingsRef.current.theme, ...preset.theme },
+        theme: resolvePresetTheme(preset),
       },
       t('profileApplied', language, { name: getPresetName(preset, language) }),
     );
@@ -163,7 +168,10 @@ export function App() {
   return (
     <main className="popup-shell" aria-busy={status === 'working'}>
       <header>
-        <p className="eyebrow">NightTime</p>
+        <p className="eyebrow">
+          NightTime
+          <span className="version">v{chrome.runtime.getManifest().version}</span>
+        </p>
         <h1>{t('comfort', language)}</h1>
         <select
           className="language-picker"

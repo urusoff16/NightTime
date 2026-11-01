@@ -9,6 +9,7 @@ const ALLOWED_MIME_TYPES = [
   'application/octet-stream',
   'application/vnd.ms-fontobject',
   'font/',
+  'image/',
   'text/css',
   'text/plain',
 ] as const;
@@ -101,8 +102,9 @@ export async function fetchRemoteResource(
     if (!isAllowedRemoteResourceUrl(response.url || currentUrl)) {
       throw new Error('Remote resource redirected to a blocked URL.');
     }
-    if (!isAllowedContentType(response.headers.get('content-type'))) {
-      throw new Error('Remote resource type is not allowed.');
+    const contentType = response.headers.get('content-type');
+    if (!isAllowedContentType(contentType)) {
+      throw new Error(`Remote resource type is not allowed: ${contentType ?? 'missing'}.`);
     }
     const declaredLength = Number(response.headers.get('content-length'));
     if (Number.isFinite(declaredLength) && declaredLength > MAX_REMOTE_RESOURCE_BYTES) {

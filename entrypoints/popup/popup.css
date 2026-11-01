@@ -60,6 +60,15 @@ header {
   text-transform: uppercase;
 }
 
+.version {
+  margin-left: 7px;
+  color: #6f7d93;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 h1 {
   margin: 0;
   font-size: 24px;

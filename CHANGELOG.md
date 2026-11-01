@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.1.7 — Smart Dark color analysis
+
+- В отчёт Smart Dark добавлены начальные OKLab-кластеры цветов текста и достоверных поверхностей.
+- Кластеры сохраняют площадь выборки и семантические роли без хранения DOM или текста страницы.
+
+## 0.1.6 — Conservative page classification
+
+- Градиенты, фоновые изображения и полупрозрачные образцы больше не искажают классификацию страницы цветом подложки.
+- Добавлены проверки неопределённых, светлых и тёмных выборок.
+
+## 0.1.5 — Smart Dark Shadow DOM fixes
+
+- Исправлен инкрементальный обход новых host-элементов с открытым Shadow DOM.
+- При удалении host коррекции текста внутри Shadow DOM снимаются с восстановлением исходного цвета.
+- Добавлена E2E-проверка сканирования и очистки Shadow DOM.
+
+## 0.1.4 — Smart Dark readability core (in progress)
+
+- Добавлено локальное вычисление контраста текста с попыткой минимальной OKLCH-коррекции после базовой темы.
+- Начаты ограниченный сбор видимых текстовых стилей, расчёт фона по предкам и пакетная обработка динамических изменений.
+- Добавлены восстановление маркеров/стилей и повторное применение от свежих настроек профиля.
+- Полный план Smart Dark остаётся поэтапным: CSS variables, кластеризация, уровни вмешательства, градиенты и debug inspector ещё впереди.
+
+## 0.1.3 — Chat composer and image resource fixes
+
+- Removed NightTime focus decoration from rich text editors such as the ChatGPT composer.
+- Allowed bounded public image resources required by dynamic Dark Reader themes.
+
+## 0.1.2 — Remote resource messaging fix
+
+- Fixed external stylesheet requests when embedded Dark Reader wraps `chrome.runtime.sendMessage`.
+- Added a guarded callback transport for background responses.
+
+## 0.1.1 — Focus and profile fixes
+
+- Removed the inner focus frame from Google-style combobox fields.
+- Reset the complete color palette when switching visual profiles.
+- Added the installed extension version to the popup header.
+
 ## 0.1.0 — Beta
 
 - Добавлены профили «Лунный индиго» и «Тёмный изумруд» с отдельными палитрами.

@@ -30,4 +30,29 @@ describe('theme presets', () => {
     expect(reconciled.engine).toBe('smart');
     expect(reconciled.theme.brightness).toBe(74);
   });
+
+  it('does not retain palette colors from the previously selected profile', () => {
+    const reconciled = reconcileActiveThemePreset({
+      ...DEFAULT_EXTENSION_SETTINGS,
+      activePresetId: 'clear-focus',
+      theme: {
+        ...DEFAULT_EXTENSION_SETTINGS.theme,
+        backgroundColor: '#0e1715',
+        surfaceColor: '#172420',
+        textColor: '#e1eee9',
+        mutedTextColor: '#9eb7ad',
+        borderColor: '#315047',
+      },
+    });
+
+    expect(reconciled.theme).toMatchObject({
+      backgroundColor: DEFAULT_EXTENSION_SETTINGS.theme.backgroundColor,
+      surfaceColor: DEFAULT_EXTENSION_SETTINGS.theme.surfaceColor,
+      textColor: DEFAULT_EXTENSION_SETTINGS.theme.textColor,
+      mutedTextColor: DEFAULT_EXTENSION_SETTINGS.theme.mutedTextColor,
+      borderColor: DEFAULT_EXTENSION_SETTINGS.theme.borderColor,
+      brightness: 100,
+      contrast: 122,
+    });
+  });
 });

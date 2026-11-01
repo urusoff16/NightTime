@@ -1,5 +1,10 @@
 import type { UiLanguage } from '../shared/i18n';
-import type { EngineMode, ExtensionSettings, ThemeSettings } from '../shared/settings-model';
+import {
+  DEFAULT_THEME_SETTINGS,
+  type EngineMode,
+  type ExtensionSettings,
+  type ThemeSettings,
+} from '../shared/settings-model';
 
 export interface ThemePreset {
   id: string;
@@ -111,12 +116,16 @@ export function getPresetDescription(preset: ThemePreset, language: UiLanguage):
   return language === 'en' ? preset.descriptionEn : preset.description;
 }
 
+export function resolvePresetTheme(preset: ThemePreset): ThemeSettings {
+  return { ...DEFAULT_THEME_SETTINGS, ...preset.theme };
+}
+
 export function reconcileActiveThemePreset(settings: ExtensionSettings): ExtensionSettings {
   const preset = findThemePreset(settings.activePresetId);
   if (!preset) return settings;
   return {
     ...settings,
     engine: preset.engine,
-    theme: { ...settings.theme, ...preset.theme },
+    theme: resolvePresetTheme(preset),
   };
 }
